@@ -295,7 +295,7 @@ function renderSpellFilters() {
 function renderSpells() {
   const query = $("#spell-search").value.toLowerCase().trim(), level = $("#spell-level-filter").value, school = $("#spell-school-filter").value;
   const filtered = state.spells.filter(s => (!query || `${s.name} ${s.school}`.toLowerCase().includes(query)) && (level === "" || s.level === Number(level)) && (!school || s.school === school));
-  $("#spell-library").innerHTML = filtered.length ? filtered.map(s => `<article class="spell-card"><div class="card-head"><h4>${safe(s.name)}</h4><span class="tag">${s.level === 0 ? "Truco" : `Nivel ${s.level}`}</span></div><div class="spell-meta">${safe(s.school)} · ${safe(s.castingTime)} · ${safe(s.range)}</div><p>${safe(s.description)}</p></article>`).join("") : '<div class="empty-state"><p>No se encontraron hechizos.</p></div>';
+  $("#spell-library").innerHTML = filtered.length ? filtered.map(s => `<article class="spell-card"><button class="npc-delete" data-delete-spell="${safe(s.id)}" title="Eliminar" aria-label="Eliminar ${safe(s.name)}">×</button><div class="card-head"><h4>${safe(s.name)}</h4><span class="tag">${s.level === 0 ? "Truco" : `Nivel ${s.level}`}</span></div><div class="spell-meta">${safe(s.school)} · ${safe(s.castingTime)} · ${safe(s.range)}</div><p>${safe(s.description)}</p></article>`).join("") : '<div class="empty-state"><p>No se encontraron hechizos.</p></div>';
 }
 
 function renderRolls() {
@@ -630,6 +630,18 @@ $("#spell-form").addEventListener("submit", event => {
 
 debouncedRender("#spell-search", renderSpells);
 ["#spell-level-filter", "#spell-school-filter"].forEach(selector => $(selector).addEventListener("change", renderSpells));
+
+$("#spell-library").addEventListener("click", async event => {
+  const spellId = event.target.dataset.deleteSpell;
+  if (!spellId) return;
+  const spell = state.spells.find(s => s.id === spellId);
+  const confirmed = await confirmDialog(`¿Eliminar «${spell ? spell.name : "este hechizo"}" del grimorio? Esta acción no se puede deshacer.`);
+  if (!confirmed) return;
+  state.spells = state.spells.filter(s => s.id !== spellId);
+  save();
+  renderSpellFilters();
+  renderSpells();
+});
 
 /* ---------- Dados ---------- */
 
