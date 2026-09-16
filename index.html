@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#141116" />
+    <meta name="description" content="Dashboard para Dungeon Masters: iniciativa, bestiario, NPCs, hechizos y utilidades de mesa." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>" />
+    <title>Grimhold | DM Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Navegación principal">
+        <a class="brand" href="#initiative" aria-label="Grimhold DM Dashboard">
+          <span class="brand-mark">✦</span><span><strong>GRIMHOLD</strong><small>DM DASHBOARD</small></span>
+        </a>
+        <nav class="nav-list">
+          <button class="nav-link active" data-section="initiative"><span>⚔</span> Iniciativa</button>
+          <button class="nav-link" data-section="monsters"><span>♜</span> Monstruos</button>
+          <button class="nav-link" data-section="npcs"><span>♙</span> NPCs</button>
+          <button class="nav-link" data-section="spells"><span>✧</span> Hechizos</button>
+          <button class="nav-link" data-section="utilities"><span>◈</span> Utilidades</button>
+        </nav>
+        <div class="sidebar-footer"><span class="status-dot"></span> Guardado local + nube</div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="sidebar">☰</button>
+          <div><p class="eyebrow">SALA DEL DUNGEON MASTER</p><h1 id="page-title">Iniciativa</h1></div>
+          <div class="session-badge"><span></span> Sesión en curso</div>
+        </header>
+
+        <section class="section active" id="initiative">
+          <div class="section-heading"><div><p class="eyebrow">ENCUENTRO ACTUAL</p><h2>Rastreador de iniciativa</h2></div><div class="action-row"><button class="btn btn-ghost" id="sort-initiative">↕ Ordenar</button><button class="btn btn-primary" id="next-turn">Siguiente turno <span>→</span></button></div></div>
+          <div class="initiative-layout">
+            <div class="panel combat-panel">
+              <div class="panel-header"><h3>Orden de combate</h3><span class="counter" id="combatant-count">0 combatientes</span></div>
+              <div class="turn-indicator"><span>Ronda</span><strong id="round-number">1</strong><span class="turn-name" id="active-turn-label">El combate aguarda</span></div>
+              <div class="combatant-list" id="combatant-list"><div class="empty-state"><span>⚔</span><p>Aún no hay combatientes.</p><small>Agrega aventureros o importa un monstruo.</small></div></div>
+            </div>
+            <aside class="panel add-combatant">
+              <div class="panel-header"><h3>Añadir combatiente</h3></div>
+              <div class="tab-pills"><button class="mini-tab active" data-combatant-type="player">Jugador</button><button class="mini-tab" data-combatant-type="monster">Monstruo</button></div>
+              <form id="combatant-form" class="form-grid compact-form">
+                <label>Nombre<input id="combatant-name" required placeholder="Ej. Elara" /></label>
+                <div class="two-col"><label>HP actual<input id="combatant-hp" type="number" min="0" value="10" /></label><label>HP máximo<input id="combatant-max-hp" type="number" min="1" value="10" /></label></div>
+                <div class="two-col"><label>CA<input id="combatant-ac" type="number" min="0" value="10" /></label><label>Iniciativa<input id="combatant-initiative" type="number" value="0" /></label></div>
+                <button class="btn btn-primary full" type="submit">+ Añadir al combate</button>
+              </form>
+              <div class="import-hint">Usa <strong>“Al combate”</strong> en la biblioteca de monstruos para importarlo rápidamente.</div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section" id="monsters">
+          <div class="section-heading"><div><p class="eyebrow">COMPENDIO DE CRIATURAS</p><h2>Monstruos</h2></div><div class="action-row"><button class="btn btn-ghost" id="export-monsters">⇩ Exportar JSON</button><label class="btn btn-ghost file-button">⇧ Importar JSON<input id="import-monsters" type="file" accept="application/json" /></label></div></div>
+          <div class="catalog-layout">
+            <div class="panel library-panel"><div class="library-tools"><label class="search-field"><span>⌕</span><input id="monster-search" placeholder="Buscar criatura..." /></label><select id="monster-type-filter"><option value="">Todos los tipos</option><option>Humanoide</option><option>Dragón</option><option>Bestia</option><option>No muerto</option></select><select id="monster-cr-filter"><option value="">Todo desafío</option><option value="0.25">CR 1/4</option><option value="0.5">CR 1/2</option><option value="1">CR 1</option><option value="10">CR 10+</option></select></div><div class="monster-grid" id="monster-library"></div></div>
+            <aside class="panel form-panel"><div class="panel-header"><h3>Crear monstruo</h3><span>Bestiario propio</span></div><form id="monster-form" class="form-grid"><label>Nombre<input id="monster-name" required placeholder="Nombre de la criatura" /></label><div class="two-col"><label>Tipo<input id="monster-type" placeholder="Humanoide" /></label><label>Tamaño<select id="monster-size"><option>Mediano</option><option>Pequeño</option><option>Grande</option><option>Enorme</option></select></label></div><div class="three-col"><label>CA<input id="monster-ac" type="number" min="0" value="12" /></label><label>HP<input id="monster-hp" type="number" min="1" value="10" /></label><label>Desafío<input id="monster-cr" type="number" min="0" step="0.25" value="1" /></label></div><label>Velocidad<input id="monster-speed" placeholder="30 pies" /></label><fieldset><legend>Atributos</legend><div class="six-col"><label>FUE<input id="str" type="number" value="10" /></label><label>DES<input id="dex" type="number" value="10" /></label><label>CON<input id="con" type="number" value="10" /></label><label>INT<input id="int" type="number" value="10" /></label><label>SAB<input id="wis" type="number" value="10" /></label><label>CAR<input id="cha" type="number" value="10" /></label></div></fieldset><label>Habilidades<textarea id="monster-abilities" rows="2" placeholder="Sentidos, resistencias, rasgos..."></textarea></label><label>Acciones<textarea id="monster-actions" rows="3" placeholder="Mordisco. Ataque de arma cuerpo a cuerpo..."></textarea></label><button class="btn btn-primary full" type="submit">Guardar monstruo</button></form></aside>
+          </div>
+        </section>
+
+        <section class="section" id="npcs">
+          <div class="section-heading"><div><p class="eyebrow">ALMAS DEL REINO</p><h2>Personajes no jugadores</h2></div><button class="btn btn-primary" id="random-npc">✦ Generar NPC aleatorio</button></div>
+          <div class="catalog-layout"><div class="panel library-panel"><div class="npc-list" id="npc-list"></div></div><aside class="panel form-panel"><div class="panel-header"><h3>Crear NPC</h3><span>Ficha narrativa</span></div><form id="npc-form" class="form-grid"><label>Nombre<input id="npc-name" required placeholder="Nombre y apellido" /></label><div class="two-col"><label>Raza<input id="npc-race" placeholder="Humano" /></label><label>Alineamiento<input id="npc-alignment" placeholder="Neutral bueno" /></label></div><label>Personalidad / Trasfondo<textarea id="npc-personality" rows="3" placeholder="Manías, historia, voz..."></textarea></label><label>Notas<textarea id="npc-notes" rows="3" placeholder="Secretos, pistas, información útil..."></textarea></label><label>Vínculos<textarea id="npc-bonds" rows="2" placeholder="Aliados, facciones, relaciones..."></textarea></label><button class="btn btn-primary full" type="submit">Guardar NPC</button></form></aside></div>
+        </section>
+
+        <section class="section" id="spells">
+          <div class="section-heading"><div><p class="eyebrow">ARCANUM</p><h2>Biblioteca de hechizos</h2></div></div>
+          <div class="catalog-layout"><div class="panel library-panel"><div class="library-tools"><label class="search-field"><span>⌕</span><input id="spell-search" placeholder="Buscar hechizo..." /></label><select id="spell-level-filter"><option value="">Todos los niveles</option><option value="0">Truco</option><option value="1">Nivel 1</option><option value="2">Nivel 2</option><option value="3">Nivel 3</option></select><select id="spell-school-filter"><option value="">Todas las escuelas</option><option>Evocación</option><option>Abjuración</option><option>Conjuración</option><option>Transmutación</option></select></div><div class="spell-list" id="spell-library"></div></div><aside class="panel form-panel"><div class="panel-header"><h3>Crear hechizo</h3><span>Grimorio personal</span></div><form id="spell-form" class="form-grid"><label>Nombre<input id="spell-name" required placeholder="Nombre del hechizo" /></label><div class="two-col"><label>Nivel<select id="spell-level"><option value="0">Truco</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></label><label>Escuela<input id="spell-school" placeholder="Evocación" /></label></div><div class="two-col"><label>Tiempo de casteo<input id="spell-casting-time" placeholder="1 acción" /></label><label>Alcance<input id="spell-range" placeholder="150 pies" /></label></div><div class="two-col"><label>Componentes<input id="spell-components" placeholder="V, S, M" /></label><label>Duración<input id="spell-duration" placeholder="Instantánea" /></label></div><label>Descripción<textarea id="spell-description" rows="5" placeholder="Describe los efectos del hechizo..."></textarea></label><button class="btn btn-primary full" type="submit">Guardar hechizo</button></form></aside></div>
+        </section>
+
+        <section class="section" id="utilities">
+          <div class="section-heading"><div><p class="eyebrow">HERRAMIENTAS DE MESA</p><h2>Utilidades del DM</h2></div></div>
+          <div class="utilities-layout"><article class="panel dice-panel"><div class="panel-header"><h3>Lanzador de dados</h3><span>El destino decide</span></div><div class="dice-buttons" aria-label="Selecciona un dado"><button data-die="4" aria-pressed="false">d4</button><button data-die="6" aria-pressed="false">d6</button><button data-die="8" aria-pressed="false">d8</button><button data-die="10" aria-pressed="false">d10</button><button data-die="12" aria-pressed="false">d12</button><button class="selected" data-die="20" aria-pressed="true">d20</button><button data-die="100" aria-pressed="false">d100</button></div><div class="dice-result"><span id="dice-expression">d20</span><strong id="dice-result">?</strong><button class="btn btn-primary" id="roll-dice">Lanzar dado</button></div><div class="roll-history"><div class="history-heading"><h4>Historial de tiradas</h4><button class="text-button" id="clear-roll-history" type="button">Limpiar historial</button></div><ul id="roll-history"><li>Las tiradas aparecerán aquí.</li></ul></div></article><article class="panel notes-panel"><div class="panel-header"><h3>Notas rápidas</h3><span id="notes-status">Guardado automáticamente</span></div><textarea id="dm-notes" placeholder="Ganchos de aventura, voces, tesoros, improvisaciones..." aria-label="Notas rápidas del Dungeon Master"></textarea></article></div>
+        </section>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="app.js" defer></script>
+  </body>
+</html>
